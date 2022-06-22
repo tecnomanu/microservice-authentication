@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+    dev:
+        container_name: ${APP_NAME}_${MICROSERVICE_NAME}
+        image: nestjs-dev:1.0.0
+        build:
+            context: .
+            target: development
+            dockerfile: ./Dockerfile
+        command: npm run start:dev
+        ports:
+            - ${EXT_PORT}:${PORT}
+            - ${EXT_PORT_TCP}:${PORT_TCP}
+        networks:
+            - microservice
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+
+    prod:
+        container_name: ${APP_NAME}_${MICROSERVICE_NAME}
+        image: nestjs-prod:1.0.0
+        build:
+            context: .
+            target: production
+            dockerfile: ./Dockerfile
+        command: npm run start:prod
+        ports:
+            - ${EXT_PORT}:${PORT}
+            - ${EXT_PORT_TCP}:${PORT_TCP}
+        networks:
+            - microservice
+        volumes:
+            - .:/usr/src/app
+            - /usr/src/app/node_modules
+        restart: unless-stopped
+
+networks:
+    microservice:
+        name: microservice-network
+        external: true
